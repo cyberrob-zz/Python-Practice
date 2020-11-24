@@ -2,7 +2,61 @@ from tkinter import *
 import backend
 
 
+def get_selected_row(event):
+  # mark selected_row as global variable so that other function can access it.
+  global selected_row
+  index = book_list.curselection()[0]
+  selected_row = book_list.get(index)
+  
+  # show selected_row onto input fields
+  title_input.delete(0, END)
+  title_input.insert(END, selected_row[1])
+  author_input.delete(0, END)
+  author_input.insert(END, selected_row[2])
+  year_input.delete(0, END)
+  year_input.insert(END, selected_row[3])
+  isbn_input.delete(0, END)
+  isbn_input.insert(END, selected_row[4])
+  
+  return selected_row
+  
+
+def view_all_command():
+  book_list.delete(0, END)
+  for row in backend.view_all():
+    book_list.insert(END, row)
+
+def insert_command():
+  backend.insert(title_text.get(), author_text.get(), year_text.get(), isbn_text.get())
+  view_all_command()
+    # Since select_row inserted, input fields should be cleared.
+  title_input.delete(0, END)
+  author_input.delete(0, END)
+  year_input.delete(0, END)
+  isbn_input.delete(0, END)
+
+def search_command():
+  rows = backend.search(title_text.get(), author_text.get(), year_text.get(), isbn_text.get())
+  book_list.delete(0, END)
+  for row in rows:
+    book_list.insert(END, row)
+
+def delete_command():
+  backend.delete(selected_row[0])
+  # Since select_row deleted, input fields should be cleared.
+  title_input.delete(0, END)
+  author_input.delete(0, END)
+  year_input.delete(0, END)
+  isbn_input.delete(0, END)
+  view_all_command()
+
+def update_command():
+  backend.update(selected_row[0], title_text.get(), author_text.get(), year_text.get(), isbn_text.get())
+  view_all_command()
+  
+
 window = Tk()
+window.wm_title('Book Store')
 
 title_label = Label(master=window, text="Title")
 title_label.grid(row=0, column=0)
@@ -37,6 +91,8 @@ isbn_input.grid(row=1, column=3)
 book_list = Listbox(master=window, height=6, width=35)
 book_list.grid(row=2, column=0, rowspan=6, columnspan=2)
 
+book_list.bind('<<ListboxSelect>>', get_selected_row)
+
 # scrollbar
 scrollbar = Scrollbar(master=window)
 scrollbar.grid(row=2,column=2, rowspan=6)
@@ -45,21 +101,20 @@ book_list.configure(yscrollcommand=scrollbar.set)
 scrollbar.configure(command=book_list.yview)
 
 # buttons
-view_all = Button(master=window, text='View all', width=12)
+view_all = Button(master=window, text='View all', width=12, command=view_all_command)
 
-view_all = Button(master=window, text='View all', width=12)
 view_all.grid(row=2, column=3)
 
-search_entry = Button(master=window, text='Search entry', width=12)
+search_entry = Button(master=window, text='Search entry', width=12, command=search_command)
 search_entry.grid(row=3, column=3)
 
-add_entry = Button(master=window, text='Add entry', width=12)
+add_entry = Button(master=window, text='Add entry', width=12, command=insert_command)
 add_entry.grid(row=4, column=3)
 
-update_entry = Button(master=window, text='Update entry', width=12)
+update_entry = Button(master=window, text='Update entry', width=12, command=update_command)
 update_entry.grid(row=5, column=3)
 
-delete_entry = Button(master=window, text='Delete entry', width=12)
+delete_entry = Button(master=window, text='Delete entry', width=12, command=delete_command)
 delete_entry.grid(row=6, column=3)
 
 close = Button(master=window, text='Close', width=12)
