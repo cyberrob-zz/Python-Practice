@@ -37,16 +37,21 @@ def delete(id):
     conn.commit()
     conn.close()
 
-def update(title="", author="", year="", isbn=""):
+def update(id, title="", author="", year="", isbn=""):
     conn = sqlite3.connect('books.sqlite')
     cursor = conn.cursor()
-    cursor.execute("SELECT * FROM book WHERE title = ? OR author = ? OR year = ? OR isbn = ?", (title, author, year, isbn))
-    rows = cursor.fetchall()
+    cursor.execute("UPDATE book SET title = ?, author = ?, year = ?, isbn = ? WHERE id = ?", (title, author, year, isbn, id))
+    conn.commit()
     conn.close()
-    return rows
+
+# def clear():
+
 
 connect()
 # insert(title='Old man and the sea', author='Ernest Hemingway', year=1954, isbn='1781396809')
 # print(search(author='Ernest Hemingway'))
-delete(7)
+# delete(4)
+print(view_all())
+
+update(id=1, title="Young man and sear", author="Matt Damon", year=1999, isbn="9183492837134")
 print(view_all())
