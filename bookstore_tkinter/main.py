@@ -5,8 +5,10 @@ import backend
 def get_selected_row(event):
   # mark selected_row as global variable so that other function can access it.
   global selected_row
-  index = book_list.curselection()[0]
-  selected_row = book_list.get(index)
+  index = -1
+  if len(book_list.curselection()) > 0:
+    index = book_list.curselection()[0]
+    selected_row = book_list.get(index)
   
   # show selected_row onto input fields
   title_input.delete(0, END)
@@ -50,9 +52,11 @@ def delete_command():
   isbn_input.delete(0, END)
   view_all_command()
 
+
 def update_command():
   backend.update(selected_row[0], title_text.get(), author_text.get(), year_text.get(), isbn_text.get())
   view_all_command()
+
   
 
 window = Tk()
@@ -117,7 +121,7 @@ update_entry.grid(row=5, column=3)
 delete_entry = Button(master=window, text='Delete entry', width=12, command=delete_command)
 delete_entry.grid(row=6, column=3)
 
-close = Button(master=window, text='Close', width=12)
+close = Button(master=window, text='Close', width=12, command=window.destroy)
 close.grid(row=7, column=3)
 
 
