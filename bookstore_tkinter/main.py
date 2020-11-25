@@ -25,7 +25,9 @@ def get_selected_row(event):
 
 def view_all_command():
   book_list.delete(0, END)
-  for row in backend.view_all():
+  rows = backend.view_all()
+  book_count_text.set(f"{len(rows)} books in stock")
+  for row in rows:
     book_list.insert(END, row)
 
 def insert_command():
@@ -73,6 +75,12 @@ year_label.grid(row=1, column=0)
 
 isbn_label = Label(master=window, text="ISBN")
 isbn_label.grid(row=1, column=2)
+
+book_count_text = StringVar()
+book_count_text.set("0 books in stock")
+book_count_label = Label(master=window, textvariable=book_count_text)
+book_count_label.grid(row=8, column=0, columnspan=4)
+
 
 # Entries
 title_text = StringVar()
@@ -124,6 +132,7 @@ delete_entry.grid(row=6, column=3)
 close = Button(master=window, text='Close', width=12, command=window.destroy)
 close.grid(row=7, column=3)
 
-
+# Call view_all_command to load all books at start
+view_all_command()
 
 window.mainloop()
